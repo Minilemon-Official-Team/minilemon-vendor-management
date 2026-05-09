@@ -5,6 +5,7 @@ import { renderPDF, fileKeyToDataUrl } from '@/lib/pdf'
 import { getS3Object, putS3Object } from '@/lib/s3'
 import { NDADocument, NDA_PDF_CSS } from '@/pdf-templates/NDADocument'
 import { getCompanyInfo } from '@/lib/nda'
+import { findNDAById } from '@/queries/nda'
 import type { VendorSnapshot } from '@/schemas/nda'
 
 export const maxDuration = 60
@@ -14,7 +15,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session?.user) return new Response('Unauthorized', { status: 401 })
 
   const { id } = await params
-  const nda = await prisma.nDA.findUnique({ where: { id } })
+  const nda = await findNDAById(id)
   if (!nda) return new Response('Not found', { status: 404 })
 
   if (session.user.role !== 'ADMIN' && nda.vendorId !== session.user.vendorId) {

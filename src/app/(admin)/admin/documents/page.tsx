@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/permissions'
-import { listDocuments } from '@/lib/documents'
+import { listDocuments } from '@/queries/documents'
 import { DocumentFilter } from '@/components/documents/DocumentFilter'
 import { DocumentTable } from '@/components/documents/DocumentTable'
 

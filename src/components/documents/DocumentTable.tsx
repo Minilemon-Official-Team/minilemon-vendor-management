@@ -5,7 +5,7 @@ import { DocStatusBadge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FileText } from 'lucide-react'
 import { formatDate, formatIDR } from '@/lib/utils'
-import { pdfUrlFor, type DocumentRow } from '@/lib/documents'
+import { pdfUrlFor, type DocumentRow } from '@/queries/documents'
 
 const typeLabel = {
   NDA: 'NDA',

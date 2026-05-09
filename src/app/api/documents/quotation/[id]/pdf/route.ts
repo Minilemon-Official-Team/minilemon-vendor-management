@@ -5,6 +5,7 @@ import { renderPDF, fileKeyToDataUrl } from '@/lib/pdf'
 import { getS3Object, putS3Object } from '@/lib/s3'
 import { QuotationDocument, QUOTATION_PDF_CSS } from '@/pdf-templates/QuotationDocument'
 import { getCompanyInfo } from '@/lib/nda'
+import { findQuotationForPDF } from '@/queries/quotations'
 
 export const maxDuration = 60
 
@@ -13,10 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session?.user) return new Response('Unauthorized', { status: 401 })
 
   const { id } = await params
-  const quotation = await prisma.quotation.findUnique({
-    where: { id },
-    include: { vendor: true, project: true },
-  })
+  const quotation = await findQuotationForPDF(id)
   if (!quotation) return new Response('Not found', { status: 404 })
 
   if (session.user.role !== 'ADMIN' && quotation.vendorId !== session.user.vendorId) {

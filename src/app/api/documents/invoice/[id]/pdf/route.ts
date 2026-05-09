@@ -5,6 +5,7 @@ import { renderPDF, fileKeyToDataUrl } from '@/lib/pdf'
 import { getS3Object, putS3Object } from '@/lib/s3'
 import { InvoiceDocument, INVOICE_PDF_CSS } from '@/pdf-templates/InvoiceDocument'
 import { getCompanyInfo } from '@/lib/nda'
+import { findInvoiceForPDF } from '@/queries/invoices'
 
 export const maxDuration = 60
 
@@ -13,10 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session?.user) return new Response('Unauthorized', { status: 401 })
 
   const { id } = await params
-  const invoice = await prisma.invoice.findUnique({
-    where: { id },
-    include: { vendor: true },
-  })
+  const invoice = await findInvoiceForPDF(id)
   if (!invoice) return new Response('Not found', { status: 404 })
 
   if (session.user.role !== 'ADMIN' && invoice.vendorId !== session.user.vendorId) {

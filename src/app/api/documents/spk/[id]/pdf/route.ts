@@ -5,6 +5,7 @@ import { renderPDF, fileKeyToDataUrl } from '@/lib/pdf'
 import { getS3Object, putS3Object } from '@/lib/s3'
 import { SPKDocument, SPK_PDF_CSS } from '@/pdf-templates/SPKDocument'
 import { getCompanyInfo } from '@/lib/nda'
+import { findSPKById } from '@/queries/spk'
 
 export const maxDuration = 60
 
@@ -13,7 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session?.user) return new Response('Unauthorized', { status: 401 })
 
   const { id } = await params
-  const spk = await prisma.sPK.findUnique({ where: { id } })
+  const spk = await findSPKById(id)
   if (!spk) return new Response('Not found', { status: 404 })
 
   if (session.user.role !== 'ADMIN' && spk.vendorId !== session.user.vendorId) {

@@ -1,7 +1,10 @@
 import { z } from 'zod'
 
 export const submitInvoiceSchema = z.object({
-  deliverableDriveLink: z.string().url('Tautan deliverable wajib berupa URL valid'),
+  deliverableDriveLink: z
+    .string()
+    .url('Tautan deliverable wajib berupa URL valid')
+    .regex(/^https?:\/\//i, 'URL harus diawali http:// atau https://'),
   notes: z.string().optional(),
   signatureFileKey: z.string().min(1, 'Tanda tangan wajib'),
 })

@@ -35,7 +35,7 @@ export function ChatThread({ projectId }: { projectId: string }) {
       if (!res.ok) throw new Error('Failed to load chat')
       return (await res.json()) as { data: ChatMessage[] }
     },
-    refetchInterval: 5000,
+    refetchInterval: 15000,
     refetchIntervalInBackground: false,
   })
 

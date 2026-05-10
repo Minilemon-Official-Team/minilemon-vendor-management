@@ -32,6 +32,9 @@ export async function listDocuments(input: ListDocumentsInput): Promise<Document
   const includeSPK = !input.type || input.type === 'all' || input.type === 'SPK'
   const includeINV = !input.type || input.type === 'all' || input.type === 'INVOICE'
 
+  const vendorSelect = { vendor: { select: { fullName: true, vendorCode: true } } }
+  const projectSelect = { project: { select: { name: true } } }
+
   const [ndas, quotations, spks, invoices] = await Promise.all([
     includeNDA
       ? prisma.nDA.findMany({
@@ -40,7 +43,14 @@ export async function listDocuments(input: ListDocumentsInput): Promise<Document
             ...(status ? { status } : {}),
             ...(search ? { docNumber: { contains: search, mode: 'insensitive' } } : {}),
           },
-          include: { vendor: { select: { fullName: true, vendorCode: true } } },
+          select: {
+            id: true,
+            docNumber: true,
+            status: true,
+            updatedAt: true,
+            pdfFileKey: true,
+            ...vendorSelect,
+          },
           orderBy: { updatedAt: 'desc' },
           take: 100,
         })
@@ -52,9 +62,15 @@ export async function listDocuments(input: ListDocumentsInput): Promise<Document
             ...(status ? { status } : {}),
             ...(search ? { docNumber: { contains: search, mode: 'insensitive' } } : {}),
           },
-          include: {
-            vendor: { select: { fullName: true, vendorCode: true } },
-            project: { select: { name: true } },
+          select: {
+            id: true,
+            docNumber: true,
+            status: true,
+            updatedAt: true,
+            grandTotal: true,
+            pdfFileKey: true,
+            ...vendorSelect,
+            ...projectSelect,
           },
           orderBy: { updatedAt: 'desc' },
           take: 100,
@@ -67,9 +83,14 @@ export async function listDocuments(input: ListDocumentsInput): Promise<Document
             ...(status ? { status } : {}),
             ...(search ? { docNumber: { contains: search, mode: 'insensitive' } } : {}),
           },
-          include: {
-            vendor: { select: { fullName: true, vendorCode: true } },
-            project: { select: { name: true } },
+          select: {
+            id: true,
+            docNumber: true,
+            status: true,
+            updatedAt: true,
+            pdfFileKey: true,
+            ...vendorSelect,
+            ...projectSelect,
           },
           orderBy: { updatedAt: 'desc' },
           take: 100,
@@ -82,9 +103,15 @@ export async function listDocuments(input: ListDocumentsInput): Promise<Document
             ...(status ? { status } : {}),
             ...(search ? { docNumber: { contains: search, mode: 'insensitive' } } : {}),
           },
-          include: {
-            vendor: { select: { fullName: true, vendorCode: true } },
-            project: { select: { name: true } },
+          select: {
+            id: true,
+            docNumber: true,
+            status: true,
+            updatedAt: true,
+            amount: true,
+            pdfFileKey: true,
+            ...vendorSelect,
+            ...projectSelect,
           },
           orderBy: { updatedAt: 'desc' },
           take: 100,

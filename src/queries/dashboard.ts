@@ -40,19 +40,19 @@ export async function getVendorDashboard(userId: string) {
     return { vendor, projects: [], counts: { inProgress: 0, pending: 0, completed: 0 } }
   }
 
-  const projects = await prisma.project.findMany({
-    where: { vendorId: vendor.id, deletedAt: null },
-    orderBy: { lastUpdatedAt: 'desc' },
-    take: 10,
-  })
+  const baseWhere = { vendorId: vendor.id, deletedAt: null }
+  const [projects, inProgress, pending, completed] = await Promise.all([
+    prisma.project.findMany({
+      where: baseWhere,
+      orderBy: { lastUpdatedAt: 'desc' },
+      take: 10,
+    }),
+    prisma.project.count({ where: { ...baseWhere, status: 'IN_PROGRESS' } }),
+    prisma.project.count({
+      where: { ...baseWhere, status: { in: ['QUOTATION_PENDING', 'SPK_PENDING_SIGN', 'INVOICE_SUBMITTED'] } },
+    }),
+    prisma.project.count({ where: { ...baseWhere, status: 'COMPLETED' } }),
+  ])
 
-  const counts = {
-    inProgress: projects.filter((p) => p.status === 'IN_PROGRESS').length,
-    pending: projects.filter((p) =>
-      ['QUOTATION_PENDING', 'SPK_PENDING_SIGN', 'INVOICE_SUBMITTED'].includes(p.status),
-    ).length,
-    completed: projects.filter((p) => p.status === 'COMPLETED').length,
-  }
-
-  return { vendor, projects, counts }
+  return { vendor, projects, counts: { inProgress, pending, completed } }
 }
